@@ -1,0 +1,7 @@
+{
+    "GUESS_WEB_URL": "http://localhost:3000",
+    "TRUE_EMAIL": "adit@test.com",
+    "TRUE_PASS": "test123",
+    "NOTE_TITLE": "test title",
+    "NOTE_DESC": "test desc"
+}

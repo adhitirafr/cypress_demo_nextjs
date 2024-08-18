@@ -1,0 +1,14 @@
+{
+    "validUser": {
+      "email": "adit@test.com",
+      "password": "test123"
+    },
+    "invalidUser": {
+      "email": "fake@mail.com",
+      "password": "111"
+    },
+    "messages": {
+      "loginFailed": "Incorrect email or password",
+      "fieldsRequired": "Email and Password must be filled"
+    }
+}
