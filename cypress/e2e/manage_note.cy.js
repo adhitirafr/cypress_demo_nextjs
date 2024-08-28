@@ -9,16 +9,7 @@ describe("Note Operations", () => {
     });
   });
 
-  const submitNote = (title, desc, checkbox) => {
-    if (title) cy.get('[data-cy="title"]').type(title)
-    if (desc) cy.get('[data-cy="description"]').type(desc)
-    if (checkbox) {
-      cy.get('[data-cy="checkbox"]').check()
-    }
-
-    cy.get('[data-cy="submit"]').should('be.visible').click();
-  }
-
+  // login step
   const login = () => {
     cy.visit(GUESS_WEB_URL + "/login");
     cy.get('[data-cy="email-input"]').type("adit@test.com");
@@ -26,25 +17,32 @@ describe("Note Operations", () => {
     cy.get('[data-cy="submit"]').click();
   }
 
+  // submit note step
+  const submitNote = (title, desc, checkbox) => {
+    if (title) cy.get('[data-cy="title"]').type(title)
+    if (desc) cy.get('[data-cy="description"]').type(desc)
+    if (checkbox) cy.get('[data-cy="checkbox"]').check()
+
+    cy.get('[id="save_button"]').should('be.visible').click();
+  }
+
   // Outer describe block for creating notes
   describe("Create Note", () => {
+
     beforeEach(() => {
       login();
     });
 
-    // it("should fail to save note with not filled title, description, and checkbox unchecked", () => {
-    //   // Submitting the note with empty title and description and unchecked checkbox
-    //   cy.get('[data-cy="submit"]').should('be.visible').click();
+    describe("When some fields are not filled", () => {
+      it("should fail to save note with not filled title, description, and checkbox unchecked", () => {
+        cy.get('[id="save_button"]').should('be.visible').click();
 
-    //   // Make sure we are still on the dashboard page
-    //   cy.url().should("include", "/dashboard");
-
-    //   // Check for validation messages
-    //   cy.get("#title_error").should("be.visible").and("contain", "Title is required");
-    //   cy.get("#description_error").should("be.visible").and("contain", "Description is required");
-    //   cy.get("#check_error").should("be.visible").and("contain", "You must check the box");
-    // });
-
+        cy.url().should("include", "/dashboard");
+        cy.get("#title_error").should("be.visible").and("contain", "Title is required");
+        cy.get("#description_error").should("be.visible").and("contain", "Description is required");
+        cy.get("#check_error").should("be.visible").and("contain", "You must check the box");
+      })
+    })
 
     // Nested describe block for specific scenarios
     describe("When all fields are filled", () => {
@@ -61,31 +59,31 @@ describe("Note Operations", () => {
   });
 
   // Outer describe block for deleting notes
-  // describe("Delete Note", () => {
-  //   beforeEach(() => {
-  //     login();
-  //     submitNote(userData.NOTE_TITLE, userData.NOTE_DESC, true);
-  //   });
+  describe("Delete Note", () => {
+    
+    beforeEach(() => {
+      login();
+    });
 
-  //   it("should successfully delete a note", () => {
-  //     // Assume the note was successfully created and now exists
-  //     submitNote(userData.NOTE_TITLE, userData.NOTE_DESC, true);
+    describe("data is available case", () => {
+      it("should successfully delete a note", () => {
+        // Assume the note was successfully created and now exists
+        // submitNote(userData.NOTE_TITLE, userData.NOTE_DESC, true);
 
-  //     // Ensure memo card is visible before deletion
-  //     cy.get('[data-cy="memo_card"]').contains(userData.NOTE_TITLE).should("be.visible");
+        // Ensure memo card is visible before deletion
+        cy.get('.memo-title').contains(userData.NOTE_TITLE).should("be.visible");
 
-  //     // Perform the delete action by clicking on the note card
-  //     cy.get('[data-cy="memo_card"]').contains(userData.NOTE_TITLE).click();
+        // Perform the delete action by clicking on the note card
+        cy.get('.memo-title').contains(userData.NOTE_TITLE).click();
 
-  //     // Ensure the delete confirmation alert is shown
-  //     cy.get("#alert_form")
-  //       .should("be.visible")
-  //       .and("contain", "Memo deleted successfully!");
+        // Ensure the delete confirmation alert is shown
+        cy.get("#alert_form")
+          .should("be.visible")
+          .and("contain", "Memo deleted successfully!");
 
-  //     // Check that the memo is no longer visible after deletion
-  //     cy.get('[data-cy="memo_card"]').contains(userData.NOTE_TITLE).should("not.exist");
-  //   });
+      });
+    })
 
+  });
 
-  // });
 });
