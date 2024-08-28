@@ -7,34 +7,31 @@ const BASE_URL_API = process.env.NEXT_PUBLIC_BASE_URL_API;
 export const createMemo = createAsyncThunk(
     'appMemo/create',
     async ({ data, token }, { rejectWithValue }) => {
-      try {
-        console.log("BASE_URL_API: " + BASE_URL_API);
-        console.log("title: " + data.title);
-        console.log("note: " + data.description);
-        console.log("token: " + token);
-  
-        const response = await axios.post(
-          `${BASE_URL_API}/note`,
-          {
-            title: data.title,
-            note: data.description,
-          },
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        return response.data;
-      } catch (error) {
-        if (error.response && error.response.status === 401) {
-          console.error('Unauthorized: Invalid token or session expired.');
+        try {
+            const response = await axios.post(
+                `${BASE_URL_API}/note`,
+                {
+                    title: data.title,
+                    note: data.description,
+                },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            console.log('Create Memo Response:', response.data); // Log the response here
+            return response.data;
+        } catch (error) {
+            if (error.response && error.response.status === 401) {
+                console.error('Unauthorized: Invalid token or session expired.');
+            }
+            return rejectWithValue(error.response);
         }
-        return rejectWithValue(error.response);
-      }
     }
-  );
-  
+);
+
 
 // Get List of Memos
 export const fetchMemos = createAsyncThunk('appMemo/get', async (params, { rejectWithValue }) => {
@@ -77,14 +74,14 @@ export const memoSlice = createSlice({
         error: null
     },
     reducers: {},
-    extraReducers: builder => {
+    extraReducers: (builder) => {
         builder
             .addCase(fetchMemos.pending, (state) => {
                 state.loading = true;
                 state.error = null;
             })
             .addCase(fetchMemos.fulfilled, (state, action) => {
-                state.data = action.payload.data;
+                state.data = action.payload.data || []; // Directly assign the array returned by the API
                 state.code = action.payload.code;
                 state.message = action.payload.message;
                 state.status = action.payload.status;
@@ -99,10 +96,15 @@ export const memoSlice = createSlice({
                 state.error = null;
             })
             .addCase(createMemo.fulfilled, (state, action) => {
-                state.data.push(action.payload.data);
-                state.code = action.payload.code;
-                state.message = action.payload.message;
-                state.status = action.payload.status;
+                if (action.payload && action.payload.data) {
+                    state.data = [...state.data, ...action.payload.data]; // Append the entire list to the current state
+                    state.code = "success";
+                    state.message = action.payload.message;
+                    state.status = "ok";
+                } else {
+                    state.error = 'Failed to create memo - no data returned';
+                    console.error('Failed to create memo - no data returned');
+                }
                 state.loading = false;
             })
             .addCase(createMemo.rejected, (state, action) => {

@@ -84,18 +84,19 @@ const Dashboard = () => {
         });
 
         // Hide the alert after 3 seconds
-        setTimeout(() => {
-          setShowAlert(false);
-        }, 3000);
+        // setTimeout(() => {
+        //   setShowAlert(false);
+        // }, 3000);
       } catch (err) {
+        console.log(err)
         setShowAlert(true);
         setAlertType("alert-danger");
         setAlertMsg("Failed to create memo.");
 
         // Hide the alert after 3 seconds
-        setTimeout(() => {
-          setShowAlert(false);
-        }, 3000);
+        // setTimeout(() => {
+        //   setShowAlert(false);
+        // }, 3000);
       } finally {
         setCreatingMemo(false);
       }
